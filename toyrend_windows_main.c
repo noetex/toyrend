@@ -113,6 +113,7 @@ void WinMainCRTStartup(void)
 	HWND Window = create_the_window();
 	toyrend_struct Renderer = toyrend_create(Window);
 	line_t Line = { 50, 50, 800, 400 };
+	circle_t Circle = {300, 300, 80};
 	for(;;)
 	{
 		MSG Message;
@@ -126,6 +127,7 @@ void WinMainCRTStartup(void)
 			DispatchMessageW(&Message);
 		}
 		toyrend_clear(&Renderer, 0x000000ff);
+		toyrend_circle(&Renderer, Circle, 0x0000ff00);
 		toyrend_line(&Renderer, Line, 0x00ff0000);
 		toyrend_update(&Renderer);
 	}

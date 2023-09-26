@@ -52,3 +52,41 @@ toyrend_line(toyrend_struct* Renderer, line_t Line, uint32_t Color)
 		}
 	}
 }
+
+static void
+toyrend_circle(toyrend_struct* Renderer, circle_t Circle, uint32_t Color)
+{
+	int32_t X0 = Circle.Center.X;
+	int32_t Y0 = Circle.Center.Y;
+	int32_t F = 1 - Circle.Radius;
+	int32_t ddF_x = 0;
+	int32_t ddF_y = -2 * Circle.Radius;
+	int32_t X = 0;
+	int32_t Y = Circle.Radius;
+
+	toyrend_pixel(Renderer, (point_t){X0 + Circle.Radius, Y0}, Color);
+	toyrend_pixel(Renderer, (point_t){X0 - Circle.Radius, Y0}, Color);
+	toyrend_pixel(Renderer, (point_t){X0, Y0 + Circle.Radius}, Color);
+	toyrend_pixel(Renderer, (point_t){X0, Y0 - Circle.Radius}, Color);
+
+	while(X < Y)
+	{
+		if(F >= 0)
+		{
+			Y -= 1;
+			ddF_y += 2;
+			F += ddF_y;
+		}
+		X += 1;
+		ddF_x += 2;
+		F += ddF_x + 1;
+		toyrend_pixel(Renderer, (point_t){X0 + X, Y0 + Y}, Color);
+		toyrend_pixel(Renderer, (point_t){X0 - X, Y0 + Y}, Color);
+		toyrend_pixel(Renderer, (point_t){X0 + X, Y0 - Y}, Color);
+		toyrend_pixel(Renderer, (point_t){X0 - X, Y0 - Y}, Color);
+		toyrend_pixel(Renderer, (point_t){X0 + Y, Y0 + X}, Color);
+		toyrend_pixel(Renderer, (point_t){X0 - Y, Y0 + X}, Color);
+		toyrend_pixel(Renderer, (point_t){X0 + Y, Y0 - X}, Color);
+		toyrend_pixel(Renderer, (point_t){X0 - Y, Y0 - X}, Color);
+	}
+}

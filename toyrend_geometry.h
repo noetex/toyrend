@@ -11,3 +11,9 @@ typedef struct
 	int32_t X1;
 	int32_t Y1;
 } line_t;
+
+typedef struct
+{
+	point_t Center;
+	uint32_t Radius;
+} circle_t;
