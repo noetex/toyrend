@@ -38,6 +38,13 @@ window_proc(HWND Window, UINT Message, WPARAM wParam, LPARAM lParam)
 		{
 			PostQuitMessage(0);
 		} break;
+		case WM_KEYDOWN:
+		{
+			if(wParam == VK_ESCAPE)
+			{
+				PostQuitMessage(0);
+			}
+		}
 		default:
 		{
 			Result = DefWindowProcW(Window, Message, wParam, lParam);
@@ -61,28 +68,51 @@ create_the_window(void)
 	return Result;
 }
 
+static void
+toyrend_update(toyrend_struct* Renderer)
+{
+	LONG Width = Renderer->BitmapInfo.bmiHeader.biWidth;
+	LONG Height = Renderer->BitmapInfo.bmiHeader.biHeight;
+	BitBlt(Renderer->WindowDC, 0, 0, Width, Height, Renderer->MemoryDC, 0, 0, SRCCOPY);
+}
+
+static void
+toyrend_resize(toyrend_struct* Renderer)
+{
+	RECT WindowRect;
+	GetClientRect(Renderer->Window, &WindowRect);
+	Renderer->BitmapInfo.bmiHeader.biWidth = WindowRect.right - WindowRect.left;
+	Renderer->BitmapInfo.bmiHeader.biHeight = WindowRect.bottom - WindowRect.top;
+	if(Renderer->BitmapHandle)
+	{
+		DeleteObject(Renderer->BitmapHandle);
+		Renderer->BitmapHandle = 0;
+	}
+	Renderer->BitmapHandle = CreateDIBSection(Renderer->MemoryDC, &Renderer->BitmapInfo, DIB_RGB_COLORS, &Renderer->Pixels, 0, 0);
+	SelectObject(Renderer->MemoryDC, Renderer->BitmapHandle);
+}
+
+static toyrend_struct
+toyrend_create(HWND Window)
+{
+	toyrend_struct Result = {0};
+	Result.Window = Window;
+	Result.WindowDC = GetDC(Window);
+	Result.MemoryDC = CreateCompatibleDC(Result.WindowDC);
+	Result.BitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	Result.BitmapInfo.bmiHeader.biPlanes = 1;
+	Result.BitmapInfo.bmiHeader.biBitCount = 32;
+	Result.BitmapInfo.bmiHeader.biCompression = BI_RGB;
+	toyrend_resize(&Result);
+	return Result;
+}
+
 void WinMainCRTStartup(void)
 {
 	enable_dpi_awareness();
 	HWND Window = create_the_window();
-	HDC WindowDC = GetDC(Window);
-	HDC MemoryDC = CreateCompatibleDC(WindowDC);
-
-	RECT WindowRect;
-	GetClientRect(Window, &WindowRect);
-	LONG WindowWidth = WindowRect.right - WindowRect.left;
-	LONG WindowHeight = WindowRect.bottom - WindowRect.top;
-	BITMAPINFO BitmapInfo = {0};
-	BitmapInfo.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	BitmapInfo.bmiHeader.biWidth = WindowWidth;
-	BitmapInfo.bmiHeader.biHeight = WindowHeight;
-	BitmapInfo.bmiHeader.biPlanes = 1;
-	BitmapInfo.bmiHeader.biBitCount = 32;
-	BitmapInfo.bmiHeader.biCompression = BI_RGB;
-	uint32_t* Pixels = 0;
-	size_t NumPixels = WindowWidth * WindowHeight;
-	HBITMAP BitmapHandle = CreateDIBSection(MemoryDC, &BitmapInfo, DIB_RGB_COLORS, &Pixels, 0, 0);
-	SelectObject(MemoryDC, BitmapHandle);
+	toyrend_struct Renderer = toyrend_create(Window);
+	line_t Line = { 50, 50, 800, 400 };
 	for(;;)
 	{
 		MSG Message;
@@ -95,11 +125,9 @@ void WinMainCRTStartup(void)
 			TranslateMessage(&Message);
 			DispatchMessageW(&Message);
 		}
-		for(int Index = 0; Index < NumPixels; Index += 1)
-		{
-			Pixels[Index] = 0x000000ff;
-		}
-		BitBlt(WindowDC, 0, 0, WindowWidth, WindowHeight, MemoryDC, 0, 0, SRCCOPY);
+		toyrend_clear(&Renderer, 0x000000ff);
+		toyrend_line(&Renderer, Line, 0x00ff0000);
+		toyrend_update(&Renderer);
 	}
 label_main_loop_exit:
 	ExitProcess(0);
