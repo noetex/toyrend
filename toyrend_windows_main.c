@@ -114,6 +114,12 @@ void WinMainCRTStartup(void)
 	toyrend_struct Renderer = toyrend_create(Window);
 	line_t Line = { 50, 50, 800, 400 };
 	circle_t Circle = {300, 300, 80};
+	triangle_t Triangle =
+	{
+		(point_t){400, 100},
+		(point_t){600, 300},
+		(point_t){650, 150},
+	};
 	for(;;)
 	{
 		MSG Message;
@@ -129,6 +135,7 @@ void WinMainCRTStartup(void)
 		toyrend_clear(&Renderer, 0x000000ff);
 		toyrend_circle(&Renderer, Circle, 0x0000ff00);
 		toyrend_line(&Renderer, Line, 0x00ff0000);
+		toyrend_triangle(&Renderer, Triangle, 0x00ffff00);
 		toyrend_update(&Renderer);
 	}
 label_main_loop_exit:

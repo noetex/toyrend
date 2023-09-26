@@ -54,6 +54,17 @@ toyrend_line(toyrend_struct* Renderer, line_t Line, uint32_t Color)
 }
 
 static void
+toyrend_triangle(toyrend_struct* Renderer, triangle_t Triangle, uint32_t Color)
+{
+	line_t Line1 = {Triangle.Vertex[0].X, Triangle.Vertex[0].Y, Triangle.Vertex[1].X, Triangle.Vertex[1].Y };
+	line_t Line2 = {Triangle.Vertex[0].X, Triangle.Vertex[0].Y, Triangle.Vertex[2].X, Triangle.Vertex[2].Y };
+	line_t Line3 = {Triangle.Vertex[1].X, Triangle.Vertex[1].Y, Triangle.Vertex[2].X, Triangle.Vertex[2].Y };
+	toyrend_line(Renderer, Line1, Color);
+	toyrend_line(Renderer, Line2, Color);
+	toyrend_line(Renderer, Line3, Color);
+}
+
+static void
 toyrend_circle(toyrend_struct* Renderer, circle_t Circle, uint32_t Color)
 {
 	int32_t X0 = Circle.Center.X;

@@ -14,6 +14,11 @@ typedef struct
 
 typedef struct
 {
+	point_t Vertex[3];
+} triangle_t;
+
+typedef struct
+{
 	point_t Center;
 	uint32_t Radius;
 } circle_t;
