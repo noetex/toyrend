@@ -5,10 +5,13 @@ enable_dpi_awareness(void)
 	void* Function = GetProcAddress(Winuser, "SetProcessDpiAwarenessContext");
 	if(Function)
 	{
-		BOOL (*SetProcessDpiAwarenessContext)(DPI_AWARENESS_CONTEXT) = Function;
-		if(!SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2))
+		DECLARE_HANDLE(my_dpi_awareness_context);
+		BOOL (*SetProcessDpiAwarenessContext)(my_dpi_awareness_context) = Function;
+		my_dpi_awareness_context PerMonitorAwareV2 = ((my_dpi_awareness_context)-4);
+		if(!SetProcessDpiAwarenessContext(PerMonitorAwareV2))
 		{
-			SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
+			my_dpi_awareness_context PerMonitorAware = ((my_dpi_awareness_context)-3);
+			SetProcessDpiAwarenessContext(PerMonitorAware);
 		}
 		return;
 	}
@@ -16,6 +19,7 @@ enable_dpi_awareness(void)
 	Function = GetProcAddress(ShellCore, "SetProcessDpiAwareness");
 	if(Function)
 	{
+		typedef enum { PROCESS_PER_MONITOR_DPI_AWARE = 2 } DPI_PROCESS_AWARENESS;
 		HRESULT (*SetProcessDpiAwareness)(PROCESS_DPI_AWARENESS) = Function;
 		SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
 		return;
@@ -27,6 +31,7 @@ enable_dpi_awareness(void)
 		SetProcessDPIAware();
 	}
 }
+
 static LRESULT CALLBACK
 window_proc(HWND Window, UINT Message, WPARAM wParam, LPARAM lParam)
 {
