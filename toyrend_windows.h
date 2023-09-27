@@ -18,10 +18,6 @@
 	#endif
 #endif
 
-#define Assert(Condition) if(Condition); else __debugbreak()
-#define Abs(Value) ((Value) < 0 ? -(Value) : (Value))
-
-
 typedef struct
 {
 	HWND Window;
@@ -29,8 +25,7 @@ typedef struct
 	HDC MemoryDC;
 	BITMAPINFO BitmapInfo;
 	HBITMAP BitmapHandle;
-	uint32_t* Pixels;
-} toyrend_struct;
+} toyrend_system_data;
 
 static WCHAR WINDOW_TITLE[] = L"toyrend";
 static WCHAR WNDCLASS_NAME[] = L"toyrend_wndclass";

@@ -1,6 +1,5 @@
 #ifdef TOYREND_SYSTEM_WINDOWS
 	#include<windows.h>
-	#include<stdint.h>
 	#include"toyrend_windows.h"
 #else
 	#error unspecified or unsupported operating system
@@ -8,6 +7,7 @@
 
 #include<stdint.h>
 
+#include"toyrend.h"
 #include"toyrend_geometry.h"
 #include"toyrend_agnostic.c"
 
